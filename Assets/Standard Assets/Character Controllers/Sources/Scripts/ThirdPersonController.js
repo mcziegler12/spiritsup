@@ -12,6 +12,7 @@ public var trotMaxAnimationSpeed : float = 1.0;
 public var runMaxAnimationSpeed : float = 1.0;
 public var jumpAnimationSpeed : float = 1.15;
 public var landAnimationSpeed : float = 1.0;
+public var pushForce : float = 2.0;
 
 private var _animation : Animation;
 
@@ -190,7 +191,7 @@ function UpdateSmoothedMovementDirection ()
 		_characterState = CharacterState.Idle;
 		
 		// Pick speed modifier
-		if (Input.GetKey (KeyCode.LeftShift) | Input.GetKey (KeyCode.RightShift))
+		if (Input.GetKey (KeyCode.LeftShift) || Input.GetKey (KeyCode.RightShift))
 		{
 			targetSpeed *= runSpeed;
 			_characterState = CharacterState.Running;
@@ -389,8 +390,15 @@ function Update() {
 function OnControllerColliderHit (hit : ControllerColliderHit )
 {
 //	Debug.DrawRay(hit.point, hit.normal);
+	var body : Rigidbody = hit.collider.attachedRigidbody;
+	if (!body || body.isKinematic) {
+		return;
+	} 
 	if (hit.moveDirection.y > 0.01) 
 		return;
+	
+	var pushDir : Vector3 = Vector3(hit.moveDirection.x, 0, hit.moveDirection.z);
+	body.velocity = pushDir * pushForce;
 }
 
 function GetSpeed () {
