@@ -36,7 +36,7 @@ var runSpeed = 6.0;
 var inAirControlAcceleration = 3.0;
 
 // How high do we jump when pressing jump and letting go immediately
-var jumpHeight = 0.5;
+var jumpHeight : float = 0.5;
 
 // The gravity for the character
 var gravity = 20.0;
@@ -242,6 +242,13 @@ function ApplyJumping ()
 		if (canJump && Time.time < lastJumpButtonTime + jumpTimeout) {
 			verticalSpeed = CalculateJumpVerticalSpeed (jumpHeight);
 			SendMessage("DidJump", SendMessageOptions.DontRequireReceiver);
+			
+			//If the pen power up is active, send this message to the pen object
+			var pen : Pen;
+			pen = GetComponent.<Pen>();
+			if (pen.equipped) {
+				pen.StartJump();
+			}
 		}
 	}
 }
@@ -260,6 +267,12 @@ function ApplyGravity ()
 		{
 			jumpingReachedApex = true;
 			SendMessage("DidJumpReachApex", SendMessageOptions.DontRequireReceiver);
+			//If the pen power up is active, send this message to the pen object
+			var pen : Pen;
+			pen = GetComponent.<Pen>();
+			if (pen.equipped) {
+				pen.EndJump();
+			}
 		}
 	
 		if (IsGrounded ())
@@ -398,7 +411,15 @@ function OnControllerColliderHit (hit : ControllerColliderHit )
 		return;
 	
 	var pushDir : Vector3 = Vector3(hit.moveDirection.x, 0, hit.moveDirection.z);
-	body.velocity = pushDir * pushForce;
+	body.AddForce(pushDir * pushForce);
+}
+
+function takeDamage() {
+	isControllable = false;
+	GetComponent(PlayerVitals).hope--;
+	transform.position += transform.rotation * Vector3.back * 2;
+	yield WaitForSeconds(0.5);
+	isControllable = true;
 }
 
 function GetSpeed () {

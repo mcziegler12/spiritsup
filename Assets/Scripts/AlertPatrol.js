@@ -5,6 +5,8 @@ public var firstWaypoint : Waypoint;
 public var isRolling : boolean;
 private var nextWaypoint : Waypoint;
 private var awarePlayer : boolean;
+private var alert : boolean;
+private var framesPast : int;
 
 public var speed : float = 1.0;
 public var visionAngle : float = 60;
@@ -15,11 +17,28 @@ function Start () {
 		nextWaypoint = firstWaypoint;
 	}
 	awarePlayer = false;
+	alert = false;
+	framesPast = 0;
 }
 
 function Update () {
-	findPlayer();
-	if (nextWaypoint && !awarePlayer) {
+	framesPast++;
+	if (framesPast % 10 == 0) {
+		framesPast = 0;
+		findPlayer();
+	}
+	if (awarePlayer) {
+		alert = true;
+		/*var player : GameObject = GameObject.FindWithTag("Player");
+		transform.rotation = Quaternion.LookRotation(Vector3(player.transform.position.x - transform.position.x, 0, player.transform.position.z - transform.position.z));
+		if (isRolling) {
+			rigidbody.AddForce(transform.forward * speed);
+		}
+		else {
+			rigidbody.velocity = transform.forward * speed;
+		}*/
+	}
+	else if (nextWaypoint && !alert) {
 		var waypointTransform : Transform = nextWaypoint.transform;
 		transform.rotation = Quaternion.LookRotation(Vector3(waypointTransform.position.x - transform.position.x, 0, waypointTransform.position.z - transform.position.z));
 		if (isRolling) {
@@ -29,17 +48,6 @@ function Update () {
 			rigidbody.velocity = transform.forward * speed;
 		}
 	}
-	else if (awarePlayer) {
-		var player : GameObject = GameObject.FindWithTag("Player");
-		transform.rotation = Quaternion.LookRotation(Vector3(player.transform.position.x - transform.position.x, 0, player.transform.position.z - transform.position.z));
-		if (isRolling) {
-			rigidbody.AddForce(transform.forward * speed);
-		}
-		else {
-			rigidbody.velocity = transform.forward * speed;
-		}
-	}
-	
 }
 
 function findPlayer() {
@@ -52,7 +60,6 @@ function findPlayer() {
 	
 	if (Mathf.Abs(angleToPlayer) < visionAngle && distanceToPlayer < visionRange) {
 		Physics.Linecast(transform.position, player.transform.position, hit);
-		Debug.Log(hit.collider.name);
 		if (hit.collider.name == player.collider.name) {
 			awarePlayer = true;
 		}
@@ -72,4 +79,16 @@ function changeWaypoint(newWaypoint : Waypoint) {
 	else {
 		Debug.Log("Identical waypoint");
 	}
+}
+
+function isAlert() : boolean {
+	return alert;
+}
+
+function isAware() : boolean {
+	return awarePlayer;
+}
+
+function setIdle() {
+	alert = false;
 }
