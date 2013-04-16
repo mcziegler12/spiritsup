@@ -1,6 +1,6 @@
 #pragma strict
 private var conv : Conversation;
-private var lines : Line[] = new Line[4];
+private var lines : Line[] = new Line[7];
 private var convStarted : boolean;
 
 function Start() {
@@ -9,10 +9,13 @@ function Start() {
 	for (var i = 0; i < lines.length; i++) {
 		lines[i] = new Line();
 	}
-	lines[0].initLine("Hello, I'm Maki.", "Maki", "Maki");
-	lines[1].initLine("Hi! I'm Tamako!", "Tamako", "Tamako");
-	lines[2].initLine("Love Live! School Idol Project", "Maki", "Maki");
-	lines[3].initLine("Tamako Market", "Tamako", "Tamako");
+	lines[0].initLine("Hey, I haven't seen you around here before.", "Janice", "Janice");
+	lines[1].initLine("I was accidentally thrown down here with the other unwanted toys.", "Margaritte", "Margaritte");
+	lines[2].initLine("I need to find a way back up.", "Margaritte", "Margaritte");
+	lines[3].initLine("It won't be easy, especially when you're still clearly loved.", "Janice", "Janice");
+	lines[4].initLine("Not every toy down here is going to be as friendly as I am. Some are going to resent you for it.", "Janice", "Janice");
+	lines[5].initLine("You'll have to fight your way through some of the more hostile toys. You should find something you can use to defend yourself with.", "Janice", "Janice");
+	lines[6].initLine("I will. Thanks for the warning!", "Margaritte", "Margaritte");
 }
 
 function OnTriggerStay (other : Collider) {

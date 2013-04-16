@@ -5,6 +5,7 @@ private var lostSightTime : int;
 private var isAttacking : boolean;
 private var cooldown : int;
 private var player : GameObject;
+private var target : Transform;
 
 function Start () {
 	patrolScript = GetComponent(AlertPatrol);
@@ -18,6 +19,11 @@ function Update () {
 	if (patrolScript.isAlert()) {
 		if (patrolScript.isAware()) {
 			if (cooldown <= 0) {
+				rigidbody.velocity = Vector3(0, 0, 0);
+				isAttacking = true;
+				transform.rotation = Quaternion.LookRotation(Vector3(player.transform.position.x - transform.position.x, 0, player.transform.position.z - transform.position.z));
+				target = player.transform;
+				wait();
 				Attack();
 			}
 			cooldown--;
@@ -36,20 +42,25 @@ function Update () {
 	}
 }
 
-function Attack() {
-	isAttacking = true;
-	rigidbody.velocity = Vector3(0, 0, 0);
-	transform.rotation = Quaternion.LookRotation(Vector3(player.transform.position.x - transform.position.x, 0, player.transform.position.z - transform.position.z));
+function wait() {
 	yield WaitForSeconds(2.0);
-	rigidbody.velocity = transform.forward * chargeSpeed;
-	yield WaitForSeconds(1.0);
-	rigidbody.velocity = Vector3.zero;
-	isAttacking = false;
+}
+
+function Attack() {
+	if (isAttacking) {
+		rigidbody.velocity = transform.forward * chargeSpeed;
+		if (Vector3.Distance(transform.position, target.position) <= 2) {
+			isAttacking = false;
+			rigidbody.velocity = Vector3(0, 0, 0);
+		}
+	}
 	cooldown = 60;
 }
 
 function OnCollisionEnter (collision : Collision) {
 	if (collision.collider.name == "Player") {
+		isAttacking = false;
+		rigidbody.velocity = Vector3(0, 0, 0);
 		player.GetComponent(ThirdPersonController).takeDamage();
 		rigidbody.velocity = Vector3.zero;
 	}

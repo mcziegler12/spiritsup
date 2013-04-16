@@ -312,6 +312,17 @@ function Update() {
 	{
 		lastJumpButtonTime = Time.time;
 	}
+	
+	if (Input.GetMouseButtonDown (0)) {
+		var pen : Pen;
+			pen = GetComponent.<Pen>();
+			if (pen.equipped) {
+				if (!pen.getIsAttacking()) {
+					GameObject.Find("PenItem").GetComponent(BoxCollider).enabled = true;
+					pen.setIsAttacking(true);
+				}
+			}
+	}
 
 	UpdateSmoothedMovementDirection();
 	
